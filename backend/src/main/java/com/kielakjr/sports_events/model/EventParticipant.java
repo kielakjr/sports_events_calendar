@@ -1,6 +1,9 @@
 package com.kielakjr.sports_events.model;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -8,24 +11,23 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-
 @Entity
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class Team {
+@NoArgsConstructor
+public class EventParticipant {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private String name;
-  private String officialName;
-  private String abbreviation;
-  private String teamCountryCode;
+  @Nullable
+  private String role;
 
   @ManyToOne
-  @JoinColumn(name = "_sport_id")
-  private Sport sport;
+  @JoinColumn(name = "_event_id")
+  private Event event;
+
+  @ManyToOne
+  @JoinColumn(name = "_team_id")
+  private Team team;
 }
