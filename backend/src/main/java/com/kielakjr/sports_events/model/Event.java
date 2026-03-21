@@ -3,9 +3,10 @@ package com.kielakjr.sports_events.model;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
-import java.sql.Date;
-import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -23,8 +24,11 @@ public class Event {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private Date event_date;
-  private Time event_time;
+  @Column(name = "event_date")
+  private LocalDate eventDate;
+
+  @Column(name = "event_time")
+  private LocalTime eventTime;
   private String season;
   private String status;
   private String stage;
