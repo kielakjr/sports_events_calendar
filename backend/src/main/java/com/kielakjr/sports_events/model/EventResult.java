@@ -19,7 +19,7 @@ public class EventResult {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private int Score;
+  private int score;
   private boolean isWin;
 
   @ManyToOne
