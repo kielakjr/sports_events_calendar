@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import com.kielakjr.sports_events.model.EventStatus;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -47,7 +49,7 @@ class EventControllerTest {
         .eventDate(LocalDate.of(2019, 7, 18))
         .eventTime(LocalTime.of(18, 30))
         .season("2019/2020")
-        .status("SCHEDULED")
+        .status(EventStatus.SCHEDULED)
         .stage("Regular Season")
         .competitionName("Bundesliga")
         .venueName("Red Bull Arena")

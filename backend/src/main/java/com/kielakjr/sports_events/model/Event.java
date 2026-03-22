@@ -10,6 +10,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -39,8 +41,9 @@ public class Event {
   private LocalTime eventTime;
   @NotBlank(message = "Season is mandatory")
   private String season;
-  @NotBlank(message = "Status is mandatory")
-  private String status;
+  @Enumerated(EnumType.STRING)
+  @NotNull(message = "Status is mandatory")
+  private EventStatus status;
   @NotBlank(message = "Stage is mandatory")
   private String stage;
 

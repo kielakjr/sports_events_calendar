@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import com.kielakjr.sports_events.model.EventStatus;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -15,7 +17,7 @@ public class EventResponseDTO {
   private LocalDate eventDate;
   private LocalTime eventTime;
   private String season;
-  private String status;
+  private EventStatus status;
   private String stage;
   private String competitionName;
   private String venueName;

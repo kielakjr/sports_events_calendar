@@ -25,6 +25,7 @@ import com.kielakjr.sports_events.model.Competition;
 import com.kielakjr.sports_events.model.Event;
 import com.kielakjr.sports_events.model.EventParticipant;
 import com.kielakjr.sports_events.model.EventResult;
+import com.kielakjr.sports_events.model.EventStatus;
 import com.kielakjr.sports_events.model.Sport;
 import com.kielakjr.sports_events.model.Team;
 import com.kielakjr.sports_events.model.Venue;
@@ -70,7 +71,7 @@ class EventServiceTest {
     event.setEventDate(LocalDate.of(2019, 7, 18));
     event.setEventTime(LocalTime.of(18, 30));
     event.setSeason("2019/2020");
-    event.setStatus("SCHEDULED");
+    event.setStatus(EventStatus.SCHEDULED);
     event.setStage("Regular Season");
     event.setCompetition(competition);
     event.setVenue(venue);
@@ -149,7 +150,7 @@ class EventServiceTest {
     requestDTO.setEventDate(LocalDate.of(2019, 7, 18));
     requestDTO.setEventTime(LocalTime.of(18, 30));
     requestDTO.setSeason("2019/2020");
-    requestDTO.setStatus("SCHEDULED");
+    requestDTO.setStatus(EventStatus.SCHEDULED);
     requestDTO.setStage("Regular Season");
     requestDTO.setCompetitionId(1L);
     requestDTO.setVenueId(1L);

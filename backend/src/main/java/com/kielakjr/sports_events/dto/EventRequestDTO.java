@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import com.kielakjr.sports_events.model.EventStatus;
+
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -16,8 +19,13 @@ public class EventRequestDTO {
   @NotNull
   private LocalTime eventTime;
 
+  @NotBlank(message = "Season is mandatory")
   private String season;
-  private String status;
+
+  @NotNull(message = "Status is mandatory")
+  private EventStatus status;
+
+  @NotBlank(message = "Stage is mandatory")
   private String stage;
 
   @NotNull
