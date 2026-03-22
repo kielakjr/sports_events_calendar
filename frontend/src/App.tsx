@@ -1,9 +1,16 @@
-import React from 'react'
+import Navbar from './components/Navbar';
+import EventList from './components/EventList';
 
 const App = () => {
   return (
-    <div>App</div>
-  )
-}
+    <>
+      <Navbar />
+      <main className="content">
+        <h1>Upcoming Events</h1>
+        <EventList />
+      </main>
+    </>
+  );
+};
 
-export default App
+export default App;
