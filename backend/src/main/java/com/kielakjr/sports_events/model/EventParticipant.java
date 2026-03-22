@@ -1,6 +1,7 @@
 package com.kielakjr.sports_events.model;
 
 import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,9 +26,11 @@ public class EventParticipant {
 
   @ManyToOne
   @JoinColumn(name = "_event_id")
+  @NotNull(message = "Event is mandatory")
   private Event event;
 
   @ManyToOne
   @JoinColumn(name = "_team_id")
+  @NotNull(message = "Team is mandatory")
   private Team team;
 }

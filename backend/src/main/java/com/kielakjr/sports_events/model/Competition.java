@@ -2,6 +2,7 @@ package com.kielakjr.sports_events.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import lombok.AllArgsConstructor;
@@ -16,5 +17,6 @@ public class Competition {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+  @NotBlank(message = "Name is mandatory")
   private String name;
 }
