@@ -6,6 +6,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -18,7 +19,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.kielakjr.sports_events.model.Sport;
 import com.kielakjr.sports_events.model.Team;
+import com.kielakjr.sports_events.repo.SportRepo;
 import com.kielakjr.sports_events.repo.TeamRepo;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 class TeamServiceTest {
@@ -26,16 +30,21 @@ class TeamServiceTest {
   @Mock
   private TeamRepo teamRepo;
 
+  @Mock
+  private SportRepo sportRepo;
+
   @InjectMocks
   private TeamService teamService;
 
   private Sport football;
+  private Sport hockey;
   private Team salzburg;
   private Team sturm;
 
   @BeforeEach
   void setUp() {
     football = new Sport(1L, "Football");
+    hockey = new Sport(2L, "Ice Hockey");
     salzburg = new Team(1L, "Salzburg", "FC Red Bull Salzburg", "SAL", "AT", football);
     sturm = new Team(2L, "Sturm", "SK Sturm Graz", "STU", "AT", football);
   }
@@ -78,21 +87,81 @@ class TeamServiceTest {
     when(teamRepo.findById(99L)).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> teamService.getTeamById(99L))
-        .isInstanceOf(jakarta.persistence.EntityNotFoundException.class)
+        .isInstanceOf(EntityNotFoundException.class)
         .hasMessageContaining("99");
   }
 
   @Test
   void createTeam_savesAndReturnsTeam() {
-    Team newTeam = new Team(null, "KAC", "EC KAC", "KAC", "AT", football);
-    Team savedTeam = new Team(3L, "KAC", "EC KAC", "KAC", "AT", football);
-
+    Team newTeam = new Team(null, "KAC", "EC KAC", "KAC", "AT", new Sport(2L, null));
+    Team savedTeam = new Team(3L, "KAC", "EC KAC", "KAC", "AT", hockey);
+    when(sportRepo.findById(2L)).thenReturn(Optional.of(hockey));
     when(teamRepo.save(any(Team.class))).thenReturn(savedTeam);
 
     Team result = teamService.createTeam(newTeam);
 
     assertThat(result.getId()).isEqualTo(3L);
     assertThat(result.getName()).isEqualTo("KAC");
+    assertThat(result.getSport().getName()).isEqualTo("Ice Hockey");
     verify(teamRepo).save(newTeam);
+  }
+
+  @Test
+  void createTeam_sportNotFound_throwsException() {
+    Team newTeam = new Team(null, "KAC", "EC KAC", "KAC", "AT", new Sport(99L, null));
+    when(sportRepo.findById(99L)).thenReturn(Optional.empty());
+
+    assertThatThrownBy(() -> teamService.createTeam(newTeam))
+        .isInstanceOf(EntityNotFoundException.class)
+        .hasMessageContaining("99");
+
+    verify(teamRepo, never()).save(any());
+  }
+
+  @Test
+  void updateTeam_updatesAndReturns() {
+    Team updated = new Team(1L, "RB Salzburg", "FC Red Bull Salzburg", "RBS", "AT", hockey);
+    when(teamRepo.findById(1L)).thenReturn(Optional.of(salzburg));
+    when(sportRepo.findById(2L)).thenReturn(Optional.of(hockey));
+    when(teamRepo.save(any(Team.class))).thenReturn(updated);
+
+    Team details = new Team(null, "RB Salzburg", "FC Red Bull Salzburg", "RBS", "AT", new Sport(2L, null));
+    Team result = teamService.updateTeam(1L, details);
+
+    assertThat(result.getName()).isEqualTo("RB Salzburg");
+    assertThat(result.getAbbreviation()).isEqualTo("RBS");
+    assertThat(result.getSport().getName()).isEqualTo("Ice Hockey");
+    verify(teamRepo).save(salzburg);
+  }
+
+  @Test
+  void updateTeam_notFound_throwsException() {
+    when(teamRepo.findById(99L)).thenReturn(Optional.empty());
+
+    assertThatThrownBy(() -> teamService.updateTeam(99L, new Team()))
+        .isInstanceOf(EntityNotFoundException.class)
+        .hasMessageContaining("99");
+
+    verify(teamRepo, never()).save(any());
+  }
+
+  @Test
+  void deleteTeam_deletes() {
+    when(teamRepo.existsById(1L)).thenReturn(true);
+
+    teamService.deleteTeam(1L);
+
+    verify(teamRepo).deleteById(1L);
+  }
+
+  @Test
+  void deleteTeam_notFound_throwsException() {
+    when(teamRepo.existsById(99L)).thenReturn(false);
+
+    assertThatThrownBy(() -> teamService.deleteTeam(99L))
+        .isInstanceOf(EntityNotFoundException.class)
+        .hasMessageContaining("99");
+
+    verify(teamRepo, never()).deleteById(any());
   }
 }
