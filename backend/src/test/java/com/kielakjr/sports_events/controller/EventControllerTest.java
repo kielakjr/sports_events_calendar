@@ -22,6 +22,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.context.annotation.Import;
 
 import com.kielakjr.sports_events.config.GlobalExceptionHandler;
 import com.kielakjr.sports_events.config.SecurityConfig;
@@ -31,7 +32,7 @@ import com.kielakjr.sports_events.service.EventService;
 import jakarta.persistence.EntityNotFoundException;
 
 @WebMvcTest(controllers = EventController.class)
-@org.springframework.context.annotation.Import({SecurityConfig.class, GlobalExceptionHandler.class})
+@Import({SecurityConfig.class, GlobalExceptionHandler.class})
 class EventControllerTest {
 
   @Autowired

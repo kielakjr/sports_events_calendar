@@ -163,7 +163,6 @@ class EventServiceTest {
     when(participantRepo.save(any(EventParticipant.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
 
-    // Mock the getEventById call that happens at the end of createEvent
     when(eventRepo.findByIdWithDetails(1L)).thenReturn(Optional.of(event));
     EventParticipant savedP1 = new EventParticipant(1L, "HOME", event, teamHome);
     EventParticipant savedP2 = new EventParticipant(2L, "AWAY", event, teamAway);
