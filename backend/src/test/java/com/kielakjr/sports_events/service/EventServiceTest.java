@@ -86,7 +86,7 @@ class EventServiceTest {
     when(participantRepo.findByEventIds(List.of(1L))).thenReturn(List.of(p1, p2));
     when(resultRepo.findByEventIds(List.of(1L))).thenReturn(List.of());
 
-    List<EventResponseDTO> result = eventService.getAllEvents();
+    List<EventResponseDTO> result = eventService.getAllEvents(null, null, null, null, null);
 
     assertThat(result).hasSize(1);
     EventResponseDTO dto = result.get(0);
@@ -102,7 +102,7 @@ class EventServiceTest {
   void getAllEvents_emptyList() {
     when(eventRepo.findAllWithDetails()).thenReturn(List.of());
 
-    List<EventResponseDTO> result = eventService.getAllEvents();
+    List<EventResponseDTO> result = eventService.getAllEvents(null, null, null, null, null);
 
     assertThat(result).isEmpty();
     verify(participantRepo, never()).findByEventIds(any());

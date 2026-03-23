@@ -23,14 +23,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.kielakjr.sports_events.config.GlobalExceptionHandler;
-import com.kielakjr.sports_events.config.SecurityConfig;
 import com.kielakjr.sports_events.model.Competition;
 import com.kielakjr.sports_events.service.CompetitionService;
 
 import jakarta.persistence.EntityNotFoundException;
 
 @WebMvcTest(controllers = CompetitionController.class)
-@Import({SecurityConfig.class, GlobalExceptionHandler.class})
+@Import(GlobalExceptionHandler.class)
 class CompetitionControllerTest {
 
   @Autowired

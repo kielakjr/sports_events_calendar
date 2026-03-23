@@ -1,5 +1,6 @@
 package com.kielakjr.sports_events.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,8 +30,13 @@ public class EventController {
   private EventService eventService;
 
   @GetMapping
-  public ResponseEntity<List<EventResponseDTO>> getAllEvents() {
-    return ResponseEntity.ok(eventService.getAllEvents());
+  public ResponseEntity<List<EventResponseDTO>> getAllEvents(
+      @RequestParam(required = false) String sport,
+      @RequestParam(required = false) LocalDate date,
+      @RequestParam(required = false) Long venueId,
+      @RequestParam(required = false) Long teamId,
+      @RequestParam(required = false) Long competitionId) {
+    return ResponseEntity.ok(eventService.getAllEvents(sport, date, venueId, teamId, competitionId));
   }
 
   @GetMapping("/{id}")

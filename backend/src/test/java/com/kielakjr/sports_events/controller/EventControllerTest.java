@@ -27,14 +27,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.context.annotation.Import;
 
 import com.kielakjr.sports_events.config.GlobalExceptionHandler;
-import com.kielakjr.sports_events.config.SecurityConfig;
 import com.kielakjr.sports_events.dto.EventResponseDTO;
 import com.kielakjr.sports_events.service.EventService;
 
 import jakarta.persistence.EntityNotFoundException;
 
 @WebMvcTest(controllers = EventController.class)
-@Import({SecurityConfig.class, GlobalExceptionHandler.class})
+@Import(GlobalExceptionHandler.class)
 class EventControllerTest {
 
   @Autowired
@@ -66,7 +65,7 @@ class EventControllerTest {
 
   @Test
   void getAllEvents_returnsOkWithList() throws Exception {
-    when(eventService.getAllEvents()).thenReturn(List.of(sampleEvent()));
+    when(eventService.getAllEvents(null, null, null, null, null)).thenReturn(List.of(sampleEvent()));
 
     mockMvc.perform(get("/api/events"))
         .andExpect(status().isOk())
@@ -78,7 +77,7 @@ class EventControllerTest {
 
   @Test
   void getAllEvents_emptyList() throws Exception {
-    when(eventService.getAllEvents()).thenReturn(List.of());
+    when(eventService.getAllEvents(null, null, null, null, null)).thenReturn(List.of());
 
     mockMvc.perform(get("/api/events"))
         .andExpect(status().isOk())

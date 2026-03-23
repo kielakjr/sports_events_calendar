@@ -23,7 +23,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.kielakjr.sports_events.config.GlobalExceptionHandler;
-import com.kielakjr.sports_events.config.SecurityConfig;
 import com.kielakjr.sports_events.model.Sport;
 import com.kielakjr.sports_events.model.Team;
 import com.kielakjr.sports_events.service.TeamService;
@@ -31,7 +30,7 @@ import com.kielakjr.sports_events.service.TeamService;
 import jakarta.persistence.EntityNotFoundException;
 
 @WebMvcTest(controllers = TeamController.class)
-@Import({SecurityConfig.class, GlobalExceptionHandler.class})
+@Import(GlobalExceptionHandler.class)
 class TeamControllerTest {
 
   @Autowired

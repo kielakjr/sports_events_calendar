@@ -1,5 +1,6 @@
 package com.kielakjr.sports_events.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,8 +41,13 @@ public class EventService {
   @Autowired
   private TeamRepo teamRepo;
 
-  public List<EventResponseDTO> getAllEvents() {
-    List<Event> events = eventRepo.findAllWithDetails();
+  public List<EventResponseDTO> getAllEvents(String sportName, LocalDate date,
+                                              Long venueId, Long teamId, Long competitionId) {
+    boolean hasFilters = sportName != null || date != null
+        || venueId != null || teamId != null || competitionId != null;
+    List<Event> events = hasFilters
+        ? eventRepo.findWithFilters(sportName, date, venueId, teamId, competitionId)
+        : eventRepo.findAllWithDetails();
     List<Long> eventIds = events.stream().map(Event::getId).toList();
 
     List<EventParticipant> allParticipants = eventIds.isEmpty()

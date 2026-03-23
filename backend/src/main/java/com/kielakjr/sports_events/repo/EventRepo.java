@@ -1,5 +1,6 @@
 package com.kielakjr.sports_events.repo;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,4 +53,19 @@ public interface EventRepo extends JpaRepository<Event, Long> {
          "WHERE e.venue.id = :venueId " +
          "ORDER BY e.eventDate DESC, e.eventTime DESC")
   List<Event> findByVenueId(@Param("venueId") Long venueId);
+
+  @Query("SELECT e FROM Event e " +
+         "JOIN FETCH e.competition " +
+         "JOIN FETCH e.venue " +
+         "WHERE (:sportName IS NULL OR e.id IN (SELECT ep.event.id FROM EventParticipant ep WHERE ep.team.sport.name = :sportName)) " +
+         "AND (:date IS NULL OR e.eventDate = :date) " +
+         "AND (:venueId IS NULL OR e.venue.id = :venueId) " +
+         "AND (:teamId IS NULL OR e.id IN (SELECT ep.event.id FROM EventParticipant ep WHERE ep.team.id = :teamId)) " +
+         "AND (:competitionId IS NULL OR e.competition.id = :competitionId) " +
+         "ORDER BY e.eventDate DESC, e.eventTime DESC")
+  List<Event> findWithFilters(@Param("sportName") String sportName,
+                              @Param("date") LocalDate date,
+                              @Param("venueId") Long venueId,
+                              @Param("teamId") Long teamId,
+                              @Param("competitionId") Long competitionId);
 }
