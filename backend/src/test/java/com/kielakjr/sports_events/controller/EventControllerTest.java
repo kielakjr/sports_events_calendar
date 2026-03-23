@@ -192,4 +192,72 @@ class EventControllerTest {
     mockMvc.perform(delete("/api/events/99"))
         .andExpect(status().isNotFound());
   }
+
+  @Test
+  void getAllEvents_filterBySport() throws Exception {
+    when(eventService.getAllEvents("Football", null, null, null, null))
+        .thenReturn(List.of(sampleEvent()));
+
+    mockMvc.perform(get("/api/events").param("sport", "Football"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(1))
+        .andExpect(jsonPath("$[0].sportName").value("Football"));
+  }
+
+  @Test
+  void getAllEvents_filterByDate() throws Exception {
+    when(eventService.getAllEvents(null, LocalDate.of(2019, 7, 18), null, null, null))
+        .thenReturn(List.of(sampleEvent()));
+
+    mockMvc.perform(get("/api/events").param("date", "2019-07-18"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(1))
+        .andExpect(jsonPath("$[0].eventDate").value("2019-07-18"));
+  }
+
+  @Test
+  void getAllEvents_filterByVenue() throws Exception {
+    when(eventService.getAllEvents(null, null, 1L, null, null))
+        .thenReturn(List.of(sampleEvent()));
+
+    mockMvc.perform(get("/api/events").param("venueId", "1"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(1))
+        .andExpect(jsonPath("$[0].venueName").value("Red Bull Arena"));
+  }
+
+  @Test
+  void getAllEvents_filterByTeam() throws Exception {
+    when(eventService.getAllEvents(null, null, null, 1L, null))
+        .thenReturn(List.of(sampleEvent()));
+
+    mockMvc.perform(get("/api/events").param("teamId", "1"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(1))
+        .andExpect(jsonPath("$[0].participants[0].teamName").value("Salzburg"));
+  }
+
+  @Test
+  void getAllEvents_filterByCompetition() throws Exception {
+    when(eventService.getAllEvents(null, null, null, null, 1L))
+        .thenReturn(List.of(sampleEvent()));
+
+    mockMvc.perform(get("/api/events").param("competitionId", "1"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(1))
+        .andExpect(jsonPath("$[0].competitionName").value("Bundesliga"));
+  }
+
+  @Test
+  void getAllEvents_filterCombined_returnsEmpty() throws Exception {
+    when(eventService.getAllEvents("Ice Hockey", LocalDate.of(2020, 1, 1), 99L, null, null))
+        .thenReturn(List.of());
+
+    mockMvc.perform(get("/api/events")
+            .param("sport", "Ice Hockey")
+            .param("date", "2020-01-01")
+            .param("venueId", "99"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(0));
+  }
 }

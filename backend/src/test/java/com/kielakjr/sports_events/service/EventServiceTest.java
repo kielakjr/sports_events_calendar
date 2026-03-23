@@ -213,4 +213,89 @@ class EventServiceTest {
 
     verify(eventRepo, never()).deleteById(any());
   }
+
+  @Test
+  void getAllEvents_filterBySport_usesFilteredQuery() {
+    EventParticipant p1 = new EventParticipant(1L, "HOME", event, teamHome);
+
+    when(eventRepo.findWithFilters("Football", null, null, null, null))
+        .thenReturn(List.of(event));
+    when(participantRepo.findByEventIds(List.of(1L))).thenReturn(List.of(p1));
+    when(resultRepo.findByEventIds(List.of(1L))).thenReturn(List.of());
+
+    List<EventResponseDTO> result = eventService.getAllEvents("Football", null, null, null, null);
+
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).getSportName()).isEqualTo("Football");
+    verify(eventRepo, never()).findAllWithDetails();
+    verify(eventRepo).findWithFilters("Football", null, null, null, null);
+  }
+
+  @Test
+  void getAllEvents_filterByDate_usesFilteredQuery() {
+    LocalDate date = LocalDate.of(2019, 7, 18);
+
+    when(eventRepo.findWithFilters(null, date, null, null, null))
+        .thenReturn(List.of(event));
+    when(participantRepo.findByEventIds(List.of(1L))).thenReturn(List.of());
+    when(resultRepo.findByEventIds(List.of(1L))).thenReturn(List.of());
+
+    List<EventResponseDTO> result = eventService.getAllEvents(null, date, null, null, null);
+
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).getEventDate()).isEqualTo(date);
+    verify(eventRepo, never()).findAllWithDetails();
+  }
+
+  @Test
+  void getAllEvents_filterByVenue_usesFilteredQuery() {
+    when(eventRepo.findWithFilters(null, null, 1L, null, null))
+        .thenReturn(List.of(event));
+    when(participantRepo.findByEventIds(List.of(1L))).thenReturn(List.of());
+    when(resultRepo.findByEventIds(List.of(1L))).thenReturn(List.of());
+
+    List<EventResponseDTO> result = eventService.getAllEvents(null, null, 1L, null, null);
+
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).getVenueName()).isEqualTo("Red Bull Arena");
+    verify(eventRepo).findWithFilters(null, null, 1L, null, null);
+  }
+
+  @Test
+  void getAllEvents_filterByTeam_usesFilteredQuery() {
+    when(eventRepo.findWithFilters(null, null, null, 1L, null))
+        .thenReturn(List.of(event));
+    when(participantRepo.findByEventIds(List.of(1L))).thenReturn(List.of());
+    when(resultRepo.findByEventIds(List.of(1L))).thenReturn(List.of());
+
+    List<EventResponseDTO> result = eventService.getAllEvents(null, null, null, 1L, null);
+
+    assertThat(result).hasSize(1);
+    verify(eventRepo).findWithFilters(null, null, null, 1L, null);
+  }
+
+  @Test
+  void getAllEvents_filterByCompetition_usesFilteredQuery() {
+    when(eventRepo.findWithFilters(null, null, null, null, 1L))
+        .thenReturn(List.of(event));
+    when(participantRepo.findByEventIds(List.of(1L))).thenReturn(List.of());
+    when(resultRepo.findByEventIds(List.of(1L))).thenReturn(List.of());
+
+    List<EventResponseDTO> result = eventService.getAllEvents(null, null, null, null, 1L);
+
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).getCompetitionName()).isEqualTo("Bundesliga");
+    verify(eventRepo).findWithFilters(null, null, null, null, 1L);
+  }
+
+  @Test
+  void getAllEvents_noFilters_usesUnfilteredQuery() {
+    when(eventRepo.findAllWithDetails()).thenReturn(List.of());
+
+    List<EventResponseDTO> result = eventService.getAllEvents(null, null, null, null, null);
+
+    assertThat(result).isEmpty();
+    verify(eventRepo).findAllWithDetails();
+    verify(eventRepo, never()).findWithFilters(any(), any(), any(), any(), any());
+  }
 }

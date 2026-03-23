@@ -15,13 +15,19 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(EntityNotFoundException.class)
-  public ResponseEntity<String> handleEntityNotFound(EntityNotFoundException ex) {
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+  public ResponseEntity<Map<String, String>> handleEntityNotFound(EntityNotFoundException ex) {
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("error", "Resource not found");
+    errorResponse.put("message", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
   }
 
   @ExceptionHandler(IllegalStateException.class)
-  public ResponseEntity<String> handleIllegalState(IllegalStateException ex) {
-    return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+  public ResponseEntity<Map<String, String>> handleIllegalState(IllegalStateException ex) {
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("error", "Illegal state");
+    errorResponse.put("message", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -31,5 +37,13 @@ public class GlobalExceptionHandler {
       errors.put(error.getField(), error.getDefaultMessage())
     );
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+  }
+
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<Map<String, String>> handleGeneralException(Exception ex) {
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("error", "An unexpected error occurred");
+    errorResponse.put("message", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
   }
 }
