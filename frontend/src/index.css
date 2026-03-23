@@ -37,7 +37,6 @@
   margin: 0;
 }
 
-/* Navbar */
 .navbar {
   display: flex;
   align-items: center;
@@ -71,7 +70,6 @@
   color: var(--accent);
 }
 
-/* Content */
 .content {
   max-width: 800px;
   margin: 0 auto;
@@ -86,7 +84,24 @@
   margin-bottom: 24px;
 }
 
-/* Event list */
+.event-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.event-filters select,
+.event-filters input {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--card-bg);
+  color: var(--text-h);
+}
+
 .event-list {
   display: flex;
   flex-direction: column;
@@ -182,7 +197,6 @@
   color: var(--red);
 }
 
-/* Buttons */
 .btn {
   padding: 6px 16px;
   border: 1px solid var(--border);
@@ -222,7 +236,6 @@
   font-size: 12px;
 }
 
-/* Section header */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -230,20 +243,17 @@
   margin-bottom: 24px;
 }
 
-/* Navbar active state */
 .navbar-links a.active {
   color: var(--accent);
   font-weight: 600;
 }
 
-/* Event actions */
 .event-actions {
   margin-top: 10px;
   display: flex;
   justify-content: flex-end;
 }
 
-/* Forms */
 .form {
   background: var(--card-bg);
   border: 1px solid var(--border);
@@ -286,7 +296,6 @@
   margin-top: 16px;
 }
 
-/* Inline form (single-row add) */
 .inline-form {
   display: flex;
   gap: 8px;
@@ -303,7 +312,6 @@
   flex: 1;
 }
 
-/* Item list (sports, venues, competitions) */
 .item-list {
   display: flex;
   flex-direction: column;
