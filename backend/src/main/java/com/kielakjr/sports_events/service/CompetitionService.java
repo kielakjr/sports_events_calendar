@@ -1,5 +1,6 @@
 package com.kielakjr.sports_events.service;
 
+import com.kielakjr.sports_events.repo.EventRepo;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +13,10 @@ import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class CompetitionService {
-
   @Autowired
   private CompetitionRepo competitionRepo;
+  @Autowired
+  private EventRepo eventRepo;
 
   public List<Competition> getAllCompetitions() {
     return competitionRepo.findAll();
@@ -39,6 +41,9 @@ public class CompetitionService {
   public void deleteCompetition(Long id) {
     if (!competitionRepo.existsById(id)) {
       throw new EntityNotFoundException("Competition not found with id: " + id);
+    }
+    if (!eventRepo.findByCompetitionId(id).isEmpty()) {
+      throw new IllegalStateException("Cannot delete competition with associated events");
     }
     competitionRepo.deleteById(id);
   }

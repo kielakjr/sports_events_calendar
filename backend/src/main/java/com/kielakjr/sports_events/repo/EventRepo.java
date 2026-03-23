@@ -28,8 +28,28 @@ public interface EventRepo extends JpaRepository<Event, Long> {
   @Query("SELECT e FROM Event e " +
          "JOIN FETCH e.competition " +
          "JOIN FETCH e.venue " +
-         "JOIN e.competition c " +
-         "WHERE c.name = :sport " +
+         "WHERE e.id IN (SELECT ep.event.id FROM EventParticipant ep WHERE ep.team.sport.name = :sport) " +
          "ORDER BY e.eventDate DESC, e.eventTime DESC")
   List<Event> findBySport(@Param("sport") String sport);
+
+  @Query("SELECT e FROM Event e " +
+         "JOIN FETCH e.competition " +
+         "JOIN FETCH e.venue " +
+         "WHERE e.id IN (SELECT ep.event.id FROM EventParticipant ep WHERE ep.team.id = :teamId) " +
+         "ORDER BY e.eventDate DESC, e.eventTime DESC")
+  List<Event> findByTeamId(@Param("teamId") Long teamId);
+
+  @Query("SELECT e FROM Event e " +
+         "JOIN FETCH e.competition " +
+         "JOIN FETCH e.venue " +
+         "WHERE e.competition.id = :competitionId " +
+         "ORDER BY e.eventDate DESC, e.eventTime DESC")
+  List<Event> findByCompetitionId(@Param("competitionId") Long competitionId);
+
+  @Query("SELECT e FROM Event e " +
+         "JOIN FETCH e.competition " +
+         "JOIN FETCH e.venue " +
+         "WHERE e.venue.id = :venueId " +
+         "ORDER BY e.eventDate DESC, e.eventTime DESC")
+  List<Event> findByVenueId(@Param("venueId") Long venueId);
 }

@@ -1,5 +1,6 @@
 package com.kielakjr.sports_events.service;
 
+import com.kielakjr.sports_events.repo.EventRepo;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +13,10 @@ import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class VenueService {
-
   @Autowired
   private VenueRepo venueRepo;
+  @Autowired
+  private EventRepo eventRepo;
 
   public List<Venue> getAllVenues() {
     return venueRepo.findAll();
@@ -40,6 +42,9 @@ public class VenueService {
   public void deleteVenue(Long id) {
     if (!venueRepo.existsById(id)) {
       throw new EntityNotFoundException("Venue not found with id: " + id);
+    }
+    if (!eventRepo.findByVenueId(id).isEmpty()) {
+      throw new IllegalStateException("Cannot delete venue with associated events");
     }
     venueRepo.deleteById(id);
   }

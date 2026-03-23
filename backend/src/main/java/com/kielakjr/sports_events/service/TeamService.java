@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.kielakjr.sports_events.repo.SportRepo;
 import com.kielakjr.sports_events.repo.TeamRepo;
+import com.kielakjr.sports_events.repo.EventRepo;
 import com.kielakjr.sports_events.model.Sport;
 import com.kielakjr.sports_events.model.Team;
 
@@ -20,6 +21,9 @@ public class TeamService {
 
   @Autowired
   private SportRepo sportRepo;
+
+  @Autowired
+  private EventRepo eventRepo;
 
   public List<Team> getAllTeams() {
     return teamRepo.findAll();
@@ -57,6 +61,9 @@ public class TeamService {
   public void deleteTeam(Long id) {
     if (!teamRepo.existsById(id)) {
       throw new EntityNotFoundException("Team not found with id: " + id);
+    }
+    if (!eventRepo.findByTeamId(id).isEmpty()) {
+      throw new IllegalStateException("Cannot delete team with id: " + id + " because it is associated with existing events");
     }
     teamRepo.deleteById(id);
   }
