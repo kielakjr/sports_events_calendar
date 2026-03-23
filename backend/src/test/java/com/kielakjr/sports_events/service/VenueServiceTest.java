@@ -17,7 +17,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.kielakjr.sports_events.model.Event;
 import com.kielakjr.sports_events.model.Venue;
+import com.kielakjr.sports_events.repo.EventRepo;
 import com.kielakjr.sports_events.repo.VenueRepo;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -27,6 +29,9 @@ class VenueServiceTest {
 
   @Mock
   private VenueRepo venueRepo;
+
+  @Mock
+  private EventRepo eventRepo;
 
   @InjectMocks
   private VenueService venueService;
@@ -120,10 +125,23 @@ class VenueServiceTest {
   @Test
   void deleteVenue_deletes() {
     when(venueRepo.existsById(1L)).thenReturn(true);
+    when(eventRepo.findByVenueId(1L)).thenReturn(List.of());
 
     venueService.deleteVenue(1L);
 
     verify(venueRepo).deleteById(1L);
+  }
+
+  @Test
+  void deleteVenue_conflict_throwsException() {
+    when(venueRepo.existsById(1L)).thenReturn(true);
+    when(eventRepo.findByVenueId(1L)).thenReturn(List.of(new Event()));
+
+    assertThatThrownBy(() -> venueService.deleteVenue(1L))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("Cannot delete venue");
+
+    verify(venueRepo, never()).deleteById(any());
   }
 
   @Test

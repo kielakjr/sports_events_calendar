@@ -18,7 +18,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.kielakjr.sports_events.model.Sport;
+import com.kielakjr.sports_events.model.Team;
 import com.kielakjr.sports_events.repo.SportRepo;
+import com.kielakjr.sports_events.repo.TeamRepo;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -27,6 +29,9 @@ class SportServiceTest {
 
   @Mock
   private SportRepo sportRepo;
+
+  @Mock
+  private TeamRepo teamRepo;
 
   @InjectMocks
   private SportService sportService;
@@ -120,10 +125,23 @@ class SportServiceTest {
   @Test
   void deleteSport_deletes() {
     when(sportRepo.existsById(1L)).thenReturn(true);
+    when(teamRepo.findBySportId(1L)).thenReturn(List.of());
 
     sportService.deleteSport(1L);
 
     verify(sportRepo).deleteById(1L);
+  }
+
+  @Test
+  void deleteSport_conflict_throwsException() {
+    when(sportRepo.existsById(1L)).thenReturn(true);
+    when(teamRepo.findBySportId(1L)).thenReturn(List.of(new Team()));
+
+    assertThatThrownBy(() -> sportService.deleteSport(1L))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("Cannot delete sport");
+
+    verify(sportRepo, never()).deleteById(any());
   }
 
   @Test

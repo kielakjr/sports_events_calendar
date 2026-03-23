@@ -41,8 +41,8 @@ class TeamControllerTest {
   private TeamService teamService;
 
   private final Sport football = new Sport(1L, "Football");
-  private final Team salzburg = new Team(1L, "Salzburg", "FC Red Bull Salzburg", "SAL", "AT", football);
-  private final Team sturm = new Team(2L, "Sturm", "SK Sturm Graz", "STU", "AT", football);
+  private final Team salzburg = new Team(1L, "Salzburg", "FC Red Bull Salzburg", "SAL", "AUT", football);
+  private final Team sturm = new Team(2L, "Sturm", "SK Sturm Graz", "STU", "AUT", football);
 
   @Test
   void getAllTeams_returnsOkWithList() throws Exception {
@@ -90,7 +90,7 @@ class TeamControllerTest {
 
   @Test
   void createTeam_returnsCreated() throws Exception {
-    Team savedTeam = new Team(3L, "KAC", "EC KAC", "KAC", "AT", football);
+    Team savedTeam = new Team(3L, "KAC", "EC KAC", "KAC", "AUT", football);
     when(teamService.createTeam(any(Team.class))).thenReturn(savedTeam);
 
     mockMvc.perform(post("/api/teams")
@@ -100,7 +100,7 @@ class TeamControllerTest {
                   "name": "KAC",
                   "officialName": "EC KAC",
                   "abbreviation": "KAC",
-                  "teamCountryCode": "AT",
+                  "teamCountryCode": "AUT",
                   "sport": { "id": 1 }
                 }
                 """))
@@ -112,7 +112,7 @@ class TeamControllerTest {
 
   @Test
   void updateTeam_returnsOk() throws Exception {
-    Team updated = new Team(1L, "RB Salzburg", "FC Red Bull Salzburg", "RBS", "AT", football);
+    Team updated = new Team(1L, "RB Salzburg", "FC Red Bull Salzburg", "RBS", "AUT", football);
     when(teamService.updateTeam(eq(1L), any(Team.class))).thenReturn(updated);
 
     mockMvc.perform(put("/api/teams/1")
@@ -122,7 +122,7 @@ class TeamControllerTest {
                   "name": "RB Salzburg",
                   "officialName": "FC Red Bull Salzburg",
                   "abbreviation": "RBS",
-                  "teamCountryCode": "AT",
+                  "teamCountryCode": "AUT",
                   "sport": { "id": 1 }
                 }
                 """))
@@ -143,11 +143,47 @@ class TeamControllerTest {
                   "name": "Test",
                   "officialName": "Test",
                   "abbreviation": "TST",
-                  "teamCountryCode": "AT",
+                  "teamCountryCode": "AUT",
                   "sport": { "id": 1 }
                 }
                 """))
         .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void createTeam_invalidBody_returnsBadRequest() throws Exception {
+    mockMvc.perform(post("/api/teams")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "name": "",
+                  "officialName": "",
+                  "abbreviation": "",
+                  "teamCountryCode": "XX"
+                }
+                """))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.name").value("Name is mandatory"))
+        .andExpect(jsonPath("$.officialName").value("Official name is mandatory"))
+        .andExpect(jsonPath("$.abbreviation").value("Abbreviation is mandatory"))
+        .andExpect(jsonPath("$.sport").value("Sport is mandatory"));
+  }
+
+  @Test
+  void createTeam_invalidCountryCode_returnsBadRequest() throws Exception {
+    mockMvc.perform(post("/api/teams")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "name": "Test",
+                  "officialName": "Test FC",
+                  "abbreviation": "TST",
+                  "teamCountryCode": "AT",
+                  "sport": { "id": 1 }
+                }
+                """))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.teamCountryCode").value("Country code must be exactly 3 characters"));
   }
 
   @Test
@@ -156,6 +192,15 @@ class TeamControllerTest {
 
     mockMvc.perform(delete("/api/teams/1"))
         .andExpect(status().isNoContent());
+  }
+
+  @Test
+  void deleteTeam_conflict() throws Exception {
+    doThrow(new IllegalStateException("Cannot delete team with id: 1 because it is associated with existing events"))
+        .when(teamService).deleteTeam(1L);
+
+    mockMvc.perform(delete("/api/teams/1"))
+        .andExpect(status().isConflict());
   }
 
   @Test

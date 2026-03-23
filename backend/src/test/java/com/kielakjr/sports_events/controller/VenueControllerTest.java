@@ -129,11 +129,32 @@ class VenueControllerTest {
   }
 
   @Test
+  void createVenue_invalidBody_returnsBadRequest() throws Exception {
+    mockMvc.perform(post("/api/venues")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                { "name": "", "city": "" }
+                """))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.name").value("Name is mandatory"))
+        .andExpect(jsonPath("$.city").value("City is mandatory"));
+  }
+
+  @Test
   void deleteVenue_returnsNoContent() throws Exception {
     doNothing().when(venueService).deleteVenue(1L);
 
     mockMvc.perform(delete("/api/venues/1"))
         .andExpect(status().isNoContent());
+  }
+
+  @Test
+  void deleteVenue_conflict() throws Exception {
+    doThrow(new IllegalStateException("Cannot delete venue with associated events"))
+        .when(venueService).deleteVenue(1L);
+
+    mockMvc.perform(delete("/api/venues/1"))
+        .andExpect(status().isConflict());
   }
 
   @Test

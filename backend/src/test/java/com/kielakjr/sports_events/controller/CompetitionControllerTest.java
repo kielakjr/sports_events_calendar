@@ -126,11 +126,31 @@ class CompetitionControllerTest {
   }
 
   @Test
+  void createCompetition_invalidBody_returnsBadRequest() throws Exception {
+    mockMvc.perform(post("/api/competitions")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                { "name": "" }
+                """))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.name").value("Name is mandatory"));
+  }
+
+  @Test
   void deleteCompetition_returnsNoContent() throws Exception {
     doNothing().when(competitionService).deleteCompetition(1L);
 
     mockMvc.perform(delete("/api/competitions/1"))
         .andExpect(status().isNoContent());
+  }
+
+  @Test
+  void deleteCompetition_conflict() throws Exception {
+    doThrow(new IllegalStateException("Cannot delete competition with associated events"))
+        .when(competitionService).deleteCompetition(1L);
+
+    mockMvc.perform(delete("/api/competitions/1"))
+        .andExpect(status().isConflict());
   }
 
   @Test

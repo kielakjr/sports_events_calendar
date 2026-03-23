@@ -17,8 +17,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.kielakjr.sports_events.model.Event;
 import com.kielakjr.sports_events.model.Sport;
 import com.kielakjr.sports_events.model.Team;
+import com.kielakjr.sports_events.repo.EventRepo;
 import com.kielakjr.sports_events.repo.SportRepo;
 import com.kielakjr.sports_events.repo.TeamRepo;
 
@@ -32,6 +34,9 @@ class TeamServiceTest {
 
   @Mock
   private SportRepo sportRepo;
+
+  @Mock
+  private EventRepo eventRepo;
 
   @InjectMocks
   private TeamService teamService;
@@ -148,10 +153,23 @@ class TeamServiceTest {
   @Test
   void deleteTeam_deletes() {
     when(teamRepo.existsById(1L)).thenReturn(true);
+    when(eventRepo.findByTeamId(1L)).thenReturn(List.of());
 
     teamService.deleteTeam(1L);
 
     verify(teamRepo).deleteById(1L);
+  }
+
+  @Test
+  void deleteTeam_conflict_throwsException() {
+    when(teamRepo.existsById(1L)).thenReturn(true);
+    when(eventRepo.findByTeamId(1L)).thenReturn(List.of(new Event()));
+
+    assertThatThrownBy(() -> teamService.deleteTeam(1L))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("Cannot delete team");
+
+    verify(teamRepo, never()).deleteById(any());
   }
 
   @Test

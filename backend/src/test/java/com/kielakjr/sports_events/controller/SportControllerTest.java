@@ -126,11 +126,31 @@ class SportControllerTest {
   }
 
   @Test
+  void createSport_invalidBody_returnsBadRequest() throws Exception {
+    mockMvc.perform(post("/api/sports")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                { "name": "" }
+                """))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.name").value("Name is mandatory"));
+  }
+
+  @Test
   void deleteSport_returnsNoContent() throws Exception {
     doNothing().when(sportService).deleteSport(1L);
 
     mockMvc.perform(delete("/api/sports/1"))
         .andExpect(status().isNoContent());
+  }
+
+  @Test
+  void deleteSport_conflict() throws Exception {
+    doThrow(new IllegalStateException("Cannot delete sport with associated teams"))
+        .when(sportService).deleteSport(1L);
+
+    mockMvc.perform(delete("/api/sports/1"))
+        .andExpect(status().isConflict());
   }
 
   @Test

@@ -18,7 +18,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.kielakjr.sports_events.model.Competition;
+import com.kielakjr.sports_events.model.Event;
 import com.kielakjr.sports_events.repo.CompetitionRepo;
+import com.kielakjr.sports_events.repo.EventRepo;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -27,6 +29,9 @@ class CompetitionServiceTest {
 
   @Mock
   private CompetitionRepo competitionRepo;
+
+  @Mock
+  private EventRepo eventRepo;
 
   @InjectMocks
   private CompetitionService competitionService;
@@ -119,10 +124,23 @@ class CompetitionServiceTest {
   @Test
   void deleteCompetition_deletes() {
     when(competitionRepo.existsById(1L)).thenReturn(true);
+    when(eventRepo.findByCompetitionId(1L)).thenReturn(List.of());
 
     competitionService.deleteCompetition(1L);
 
     verify(competitionRepo).deleteById(1L);
+  }
+
+  @Test
+  void deleteCompetition_conflict_throwsException() {
+    when(competitionRepo.existsById(1L)).thenReturn(true);
+    when(eventRepo.findByCompetitionId(1L)).thenReturn(List.of(new Event()));
+
+    assertThatThrownBy(() -> competitionService.deleteCompetition(1L))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("Cannot delete competition");
+
+    verify(competitionRepo, never()).deleteById(any());
   }
 
   @Test

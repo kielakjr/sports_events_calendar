@@ -162,6 +162,22 @@ class EventControllerTest {
   }
 
   @Test
+  void createEvent_invalidBody_returnsBadRequest() throws Exception {
+    mockMvc.perform(post("/api/events")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "season": "",
+                  "stage": ""
+                }
+                """))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.season").value("Season is mandatory"))
+        .andExpect(jsonPath("$.stage").value("Stage is mandatory"))
+        .andExpect(jsonPath("$.status").value("Status is mandatory"));
+  }
+
+  @Test
   void deleteEvent_returnsNoContent() throws Exception {
     doNothing().when(eventService).deleteEvent(1L);
 
