@@ -28,3 +28,39 @@ export interface SportEvent {
   participants: ParticipantInfo[];
   results: ResultInfo[];
 }
+
+export interface EventRequest {
+  eventDate: string;
+  eventTime: string;
+  season: string;
+  status: EventStatus;
+  stage: string;
+  competitionId: number;
+  venueId: number;
+  participants: { teamId: number; role: string }[];
+}
+
+export interface Sport {
+  id: number;
+  name: string;
+}
+
+export interface Team {
+  id: number;
+  name: string;
+  officialName: string;
+  abbreviation: string;
+  teamCountryCode: string;
+  sport: Sport;
+}
+
+export interface Venue {
+  id: number;
+  name: string;
+  city: string;
+}
+
+export interface Competition {
+  id: number;
+  name: string;
+}

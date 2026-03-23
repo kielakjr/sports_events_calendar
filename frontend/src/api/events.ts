@@ -1,15 +1,17 @@
-import type { SportEvent } from '../types/event';
+import client from './client';
+import type { SportEvent, EventRequest } from '../types/event';
 
-const BASE = '/api/events';
+export const fetchEvents = () =>
+  client.get<SportEvent[]>('/events').then((res) => res.data);
 
-export async function fetchEvents(): Promise<SportEvent[]> {
-  const res = await fetch(BASE);
-  if (!res.ok) throw new Error('Failed to fetch events');
-  return res.json();
-}
+export const fetchEvent = (id: number) =>
+  client.get<SportEvent>(`/events/${id}`).then((res) => res.data);
 
-export async function fetchEvent(id: number): Promise<SportEvent> {
-  const res = await fetch(`${BASE}/${id}`);
-  if (!res.ok) throw new Error('Failed to fetch event');
-  return res.json();
-}
+export const createEvent = (data: EventRequest) =>
+  client.post<SportEvent>('/events', data).then((res) => res.data);
+
+export const updateEvent = (id: number, data: EventRequest) =>
+  client.put<SportEvent>(`/events/${id}`, data).then((res) => res.data);
+
+export const deleteEvent = (id: number) =>
+  client.delete(`/events/${id}`);
