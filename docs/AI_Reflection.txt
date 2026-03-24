@@ -1,0 +1,58 @@
+AI Reflection
+=============
+
+Tool Used: Claude Code (Anthropic)
+
+How AI Was Used
+---------------
+
+1. Writing Tests
+   Claude assisted in writing unit tests for the controller and service layers.
+   I described the methods I wanted to test and the expected behavior, and Claude
+   helped generate test cases using JUnit 5 and Mockito. I reviewed each test to
+   ensure it matched my intended logic and made adjustments where the generated
+   assertions or mock setups did not fit the actual code.
+
+2. Debugging
+   For some specific issues I could not resolve quickly on my own, I used Claude
+   to help diagnose the root cause. Most debugging I handled myself, but Claude
+   was useful as a second opinion for the trickier problems.
+
+3. Frontend Development
+   Since the frontend was not the main focus of this exercise, I leaned on Claude
+   more heavily for the React components and styling. I described the desired UI
+   and functionality, and Claude helped generate component code that I then
+   adjusted to fit the project structure and API.
+
+5. Documentation
+   Claude helped draft parts of the README and other documentation. I provided the
+   project context and requirements, and Claude produced structured content that I
+   reviewed and edited to accurately reflect the project.
+
+6. Research
+   I used Claude to look up Spring Boot configuration options, JPA query strategies,
+   Docker Compose best practices, and other technical topics. This saved time
+   compared to searching through documentation manually, especially for syntax and
+   configuration details I was less familiar with.
+
+What I Did Myself
+-----------------
+
+- Designed the database schema and ERD
+- Chose the tech stack (Spring Boot, React, PostgreSQL, Docker)
+- Implemented the backend models, repositories, services, and controllers
+- Built the frontend components, API integration, and filtering UI
+- Set up Docker Compose orchestration and multi-stage Dockerfiles
+- Wrote the data seeder with sample sports, teams, venues, and events
+- Made all architectural decisions (project structure, API design, error handling)
+- Reviewed and validated all AI-generated output before using it
+
+Reflection
+----------
+
+AI was a productivity tool, not a replacement for understanding. It accelerated
+repetitive tasks like writing boilerplate test code and helped me get unstuck
+faster when debugging. However, every piece of AI-generated code was reviewed and
+tested by me. The core architecture, design decisions, and implementation logic
+are my own work. Using AI effectively still required me to understand what I was
+building and to critically evaluate every suggestion.
