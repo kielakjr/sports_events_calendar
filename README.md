@@ -110,18 +110,23 @@ npm run dev
 | GET    | `/api/events`         | List events (with filters)|
 | GET    | `/api/events/{id}`    | Get single event          |
 | POST   | `/api/events`         | Create event              |
+| PUT    | `/api/events/{id}`    | Update event   |
 | DELETE | `/api/events/{id}`    | Delete event              |
 | GET    | `/api/sports`         | List sports               |
 | POST   | `/api/sports`         | Create sport              |
+| PUT    | `/api/sports/{id}`    | Update sport   |
 | DELETE | `/api/sports/{id}`    | Delete sport              |
 | GET    | `/api/teams`          | List teams                |
 | POST   | `/api/teams`          | Create team               |
+| PUT    | `/api/teams/{id}`     | Update team    |
 | DELETE | `/api/teams/{id}`     | Delete team               |
 | GET    | `/api/venues`         | List venues               |
 | POST   | `/api/venues`         | Create venue              |
+| PUT    | `/api/venues/{id}`    | Update venue   |
 | DELETE | `/api/venues/{id}`    | Delete venue              |
 | GET    | `/api/competitions`   | List competitions         |
 | POST   | `/api/competitions`   | Create competition        |
+| PUT    | `/api/competitions/{id}` | Update competition |
 | DELETE | `/api/competitions/{id}` | Delete competition     |
 
 **Event filter query parameters:** `sport`, `date`, `venueId`, `teamId`, `competitionId`

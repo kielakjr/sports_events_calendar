@@ -8,10 +8,11 @@ import { fetchCompetitions } from '../api/competitions';
 
 interface Props {
   onAdd: () => void;
+  onEdit: (event: SportEvent) => void;
   refreshKey: number;
 }
 
-const EventList = ({ onAdd, refreshKey }: Props) => {
+const EventList = ({ onAdd, onEdit, refreshKey }: Props) => {
   const [events, setEvents] = useState<SportEvent[]>([]);
   const [sports, setSports] = useState<Sport[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
@@ -153,6 +154,9 @@ const EventList = ({ onAdd, refreshKey }: Props) => {
                 </div>
               )}
               <div className="event-actions">
+                <button className="btn btn-sm" onClick={() => onEdit(event)}>
+                  Edit
+                </button>
                 <button className="btn btn-danger btn-sm" onClick={() => handleDelete(event.id)}>
                   Delete
                 </button>

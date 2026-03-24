@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Navbar from './components/Navbar';
 import type { Page } from './components/Navbar';
+import type { SportEvent } from './types/event';
 import EventList from './components/EventList';
 import EventForm from './components/EventForm';
 import SportsPage from './components/SportsPage';
@@ -11,19 +12,27 @@ import VenuesPage from './components/VenuesPage';
 const App = () => {
   const [page, setPage] = useState<Page>('events');
   const [showEventForm, setShowEventForm] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<SportEvent | undefined>();
   const [refreshKey, setRefreshKey] = useState(0);
+
+  const closeForm = () => {
+    setShowEventForm(false);
+    setEditingEvent(undefined);
+  };
 
   const renderPage = () => {
     switch (page) {
       case 'events':
         return showEventForm ? (
           <EventForm
-            onCreated={() => { setShowEventForm(false); setRefreshKey((k) => k + 1); }}
-            onCancel={() => setShowEventForm(false)}
+            editEvent={editingEvent}
+            onCreated={() => { closeForm(); setRefreshKey((k) => k + 1); }}
+            onCancel={closeForm}
           />
         ) : (
           <EventList
             onAdd={() => setShowEventForm(true)}
+            onEdit={(event) => { setEditingEvent(event); setShowEventForm(true); }}
             refreshKey={refreshKey}
           />
         );
@@ -40,7 +49,7 @@ const App = () => {
 
   return (
     <>
-      <Navbar current={page} onChange={(p) => { setPage(p); setShowEventForm(false); }} />
+      <Navbar current={page} onChange={(p) => { setPage(p); closeForm(); }} />
       <main className="content">
         {renderPage()}
       </main>

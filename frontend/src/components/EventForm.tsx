@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { EventRequest, EventStatus, Competition, Venue, Team } from '../types/event';
-import { createEvent } from '../api/events';
+import type { EventRequest, EventStatus, SportEvent, Competition, Venue, Team } from '../types/event';
+import { createEvent, updateEvent } from '../api/events';
 import { fetchCompetitions } from '../api/competitions';
 import { fetchVenues } from '../api/venues';
 import { fetchTeams } from '../api/teams';
@@ -8,29 +8,32 @@ import { fetchTeams } from '../api/teams';
 interface Props {
   onCreated: () => void;
   onCancel: () => void;
+  editEvent?: SportEvent;
 }
 
 const STATUSES: EventStatus[] = ['SCHEDULED', 'ONGOING', 'COMPLETED', 'CANCELED'];
 
-const EventForm = ({ onCreated, onCancel }: Props) => {
+const defaultForm: EventRequest = {
+  eventDate: '',
+  eventTime: '',
+  season: '',
+  status: 'SCHEDULED',
+  stage: '',
+  competitionId: 0,
+  venueId: 0,
+  participants: [
+    { teamId: 0, role: 'HOME' },
+    { teamId: 0, role: 'AWAY' },
+  ],
+};
+
+const EventForm = ({ onCreated, onCancel, editEvent }: Props) => {
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const [form, setForm] = useState<EventRequest>({
-    eventDate: '',
-    eventTime: '',
-    season: '',
-    status: 'SCHEDULED',
-    stage: '',
-    competitionId: 0,
-    venueId: 0,
-    participants: [
-      { teamId: 0, role: 'HOME' },
-      { teamId: 0, role: 'AWAY' },
-    ],
-  });
+  const [form, setForm] = useState<EventRequest>(defaultForm);
 
   useEffect(() => {
     Promise.all([fetchCompetitions(), fetchVenues(), fetchTeams()])
@@ -38,17 +41,42 @@ const EventForm = ({ onCreated, onCancel }: Props) => {
         setCompetitions(c);
         setVenues(v);
         setTeams(t);
+
+        if (editEvent) {
+          const comp = c.find((x) => x.name === editEvent.competitionName);
+          const venue = v.find((x) => x.name === editEvent.venueName && x.city === editEvent.venueCity);
+          const home = editEvent.participants.find((p) => p.role === 'HOME') ?? editEvent.participants[0];
+          const away = editEvent.participants.find((p) => p.role === 'AWAY') ?? editEvent.participants[1];
+          setForm({
+            eventDate: editEvent.eventDate,
+            eventTime: editEvent.eventTime,
+            season: editEvent.season,
+            status: editEvent.status,
+            stage: editEvent.stage,
+            competitionId: comp?.id ?? 0,
+            venueId: venue?.id ?? 0,
+            participants: [
+              { teamId: home?.teamId ?? 0, role: 'HOME' },
+              { teamId: away?.teamId ?? 0, role: 'AWAY' },
+            ],
+          });
+        }
       })
       .catch((err) => setError(err.message));
-  }, []);
+  }, [editEvent]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     try {
-      await createEvent(form);
+      if (editEvent) {
+        await updateEvent(editEvent.id, form);
+      } else {
+        await createEvent(form);
+      }
       onCreated();
     } catch (err: unknown) {
+      const action = editEvent ? 'update' : 'create';
       if (typeof err === 'object' && err !== null && 'response' in err) {
         const axiosErr = err as { response?: { data?: unknown } };
         const data = axiosErr.response?.data;
@@ -57,10 +85,10 @@ const EventForm = ({ onCreated, onCancel }: Props) => {
         } else if (typeof data === 'string') {
           setError(data);
         } else {
-          setError('Failed to create event');
+          setError(`Failed to ${action} event`);
         }
       } else {
-        setError(err instanceof Error ? err.message : 'Failed to create event');
+        setError(err instanceof Error ? err.message : `Failed to ${action} event`);
       }
     }
   };
@@ -76,7 +104,7 @@ const EventForm = ({ onCreated, onCancel }: Props) => {
   return (
     <div>
       <div className="section-header">
-        <h1>New Event</h1>
+        <h1>{editEvent ? 'Edit Event' : 'New Event'}</h1>
       </div>
       <form className="form" onSubmit={handleSubmit}>
         {error && <p className="error">{error}</p>}
@@ -155,7 +183,7 @@ const EventForm = ({ onCreated, onCancel }: Props) => {
 
         <div className="form-actions">
           <button type="button" className="btn" onClick={onCancel}>Cancel</button>
-          <button type="submit" className="btn btn-primary">Create Event</button>
+          <button type="submit" className="btn btn-primary">{editEvent ? 'Update Event' : 'Create Event'}</button>
         </div>
       </form>
     </div>

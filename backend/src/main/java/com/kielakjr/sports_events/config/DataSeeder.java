@@ -151,14 +151,14 @@ public class DataSeeder implements ApplicationRunner {
 
         Event frenchOpenFinal = eventRepo.save(new Event(null, LocalDate.of(2026, 6, 7), LocalTime.of(15, 0), "2026", EventStatus.SCHEDULED, "Final", frenchOpen, rolandGarros));
         eventParticipantRepo.saveAll(List.of(
-            new EventParticipant(null, null, frenchOpenFinal, djokovic),
-            new EventParticipant(null, null, frenchOpenFinal, alcaraz)
+            new EventParticipant(null, "HOME", frenchOpenFinal, djokovic),
+            new EventParticipant(null, "AWAY", frenchOpenFinal, alcaraz)
         ));
 
         Event frenchOpenSemi = eventRepo.save(new Event(null, LocalDate.of(2026, 6, 6), LocalTime.of(14, 0), "2026", EventStatus.SCHEDULED, "Semi-Final", frenchOpen, rolandGarros));
         eventParticipantRepo.saveAll(List.of(
-            new EventParticipant(null, null, frenchOpenSemi, sinner),
-            new EventParticipant(null, null, frenchOpenSemi, alcaraz)
+            new EventParticipant(null, "HOME", frenchOpenSemi, sinner),
+            new EventParticipant(null, "AWAY", frenchOpenSemi, alcaraz)
         ));
 
         Event bruinsRangers = eventRepo.save(new Event(null, LocalDate.of(2026, 1, 15), LocalTime.of(19, 0), "2025/2026", EventStatus.COMPLETED, "Regular Season", nhl, tdGarden));
